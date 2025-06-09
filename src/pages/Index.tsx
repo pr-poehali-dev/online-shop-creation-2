@@ -1,158 +1,212 @@
 import { useState } from "react";
-import Header from "@/components/Header";
-import Hero from "@/components/Hero";
-import ProductGrid from "@/components/ProductGrid";
-import Cart, { CartItem } from "@/components/Cart";
-import { Product } from "@/components/ProductCard";
+import CinemaHeader from "@/components/CinemaHeader";
+import CinemaHero from "@/components/CinemaHero";
+import MovieGrid from "@/components/MovieGrid";
+import CategoryFilter from "@/components/CategoryFilter";
+import { Movie, MovieCategory } from "@/types/movie";
 
-// Мок данные товаров
-const mockProducts: Product[] = [
+// Мок данные фильмов
+const mockMovies: Movie[] = [
   {
     id: 1,
-    name: "Apple iPhone 15 Pro 128GB",
-    price: 89990,
-    originalPrice: 99990,
-    image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400",
-    category: "Смартфоны",
-    rating: 4.8,
-    inStock: true,
+    title: "Оппенгеймер",
+    originalTitle: "Oppenheimer",
+    year: 2023,
+    duration: 180,
+    rating: 8.4,
+    genre: ["Драма", "История", "Биография"],
+    country: "США",
+    director: "Кристофер Нолан",
+    actors: ["Киллиан Мерфи", "Эмили Блант", "Роберт Дауни мл."],
+    description:
+      "История американского физика Роберта Оппенгеймера и его роли в разработке атомной бомбы.",
+    poster:
+      "https://images.unsplash.com/photo-1489599540919-193b62c0ecfa?w=400",
+    quality: "4K",
+    isNew: true,
+    isTop: true,
+    viewCount: 2500000,
   },
   {
     id: 2,
-    name: "Samsung Galaxy S24 Ultra",
-    price: 79990,
-    image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400",
-    category: "Смартфоны",
-    rating: 4.7,
-    inStock: true,
+    title: "Джон Уик 4",
+    originalTitle: "John Wick: Chapter 4",
+    year: 2023,
+    duration: 169,
+    rating: 7.8,
+    genre: ["Боевик", "Триллер", "Криминал"],
+    country: "США",
+    director: "Чад Стахелски",
+    actors: ["Киану Ривз", "Лоуренс Фишберн", "Иэн Макшейн"],
+    description:
+      "Джон Уик находит способ победить Правление. Но прежде чем заслужить свободу, он должен сразиться с новым врагом.",
+    poster:
+      "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400",
+    quality: "FullHD",
+    isNew: true,
+    viewCount: 3200000,
   },
   {
     id: 3,
-    name: "MacBook Air M2 13 дюймов",
-    price: 119990,
-    originalPrice: 129990,
-    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400",
-    category: "Ноутбуки",
-    rating: 4.9,
-    inStock: true,
+    title: "Паразиты",
+    originalTitle: "기생충",
+    year: 2019,
+    duration: 132,
+    rating: 8.6,
+    genre: ["Триллер", "Драма", "Комедия"],
+    country: "Южная Корея",
+    director: "Пон Джун-хо",
+    actors: ["Сон Кан-хо", "Ли Сон-гюн", "Чо Ё-джон"],
+    description:
+      "Фильм о социальном неравенстве и классовых различиях в современном обществе.",
+    poster:
+      "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=400",
+    quality: "FullHD",
+    isTop: true,
+    viewCount: 4100000,
   },
   {
     id: 4,
-    name: "Sony WH-1000XM4 Наушники",
-    price: 24990,
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400",
-    category: "Аудио",
-    rating: 4.6,
-    inStock: false,
+    title: "Интерстеллар",
+    originalTitle: "Interstellar",
+    year: 2014,
+    duration: 169,
+    rating: 8.7,
+    genre: ["Фантастика", "Драма", "Приключения"],
+    country: "США",
+    director: "Кристофер Нолан",
+    actors: ["Мэттью МакКонахи", "Энн Хэтэуэй", "Джессика Честейн"],
+    description:
+      "Команда исследователей путешествует через червоточину в космосе в попытке обеспечить выживание человечества.",
+    poster:
+      "https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=400",
+    quality: "4K",
+    isTop: true,
+    viewCount: 5800000,
   },
   {
     id: 5,
-    name: "iPad Pro 11 дюймов",
-    price: 69990,
-    image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400",
-    category: "Планшеты",
-    rating: 4.8,
-    inStock: true,
+    title: "Побег из Шоушенка",
+    originalTitle: "The Shawshank Redemption",
+    year: 1994,
+    duration: 142,
+    rating: 9.3,
+    genre: ["Драма"],
+    country: "США",
+    director: "Фрэнк Дарабонт",
+    actors: ["Тим Роббинс", "Морган Фриман", "Боб Гантон"],
+    description:
+      "Два заключенных подружились на протяжении многих лет, находя утешение и искупление через добрые дела.",
+    poster:
+      "https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=400",
+    quality: "HD",
+    isTop: true,
+    viewCount: 8900000,
   },
   {
     id: 6,
-    name: "Apple Watch Series 9",
-    price: 39990,
-    originalPrice: 44990,
-    image: "https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=400",
-    category: "Часы",
-    rating: 4.7,
-    inStock: true,
-  },
-  {
-    id: 7,
-    name: "Nintendo Switch OLED",
-    price: 34990,
-    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400",
-    category: "Игры",
-    rating: 4.5,
-    inStock: true,
-  },
-  {
-    id: 8,
-    name: "Dyson V15 Detect Пылесос",
-    price: 49990,
-    image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400",
-    category: "Бытовая техника",
-    rating: 4.4,
-    inStock: true,
+    title: "Барби",
+    originalTitle: "Barbie",
+    year: 2023,
+    duration: 114,
+    rating: 7.0,
+    genre: ["Комедия", "Фэнтези", "Приключения"],
+    country: "США",
+    director: "Грета Гервиг",
+    actors: ["Марго Робби", "Райан Гослинг", "Америка Феррера"],
+    description: "Барби и Кен отправляются в реальный мир в поисках счастья.",
+    poster:
+      "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=400",
+    quality: "FullHD",
+    isNew: true,
+    viewCount: 1800000,
   },
 ];
 
+const categories: MovieCategory[] = [
+  { id: "action", name: "Боевики", slug: "action" },
+  { id: "drama", name: "Драмы", slug: "drama" },
+  { id: "comedy", name: "Комедии", slug: "comedy" },
+  { id: "thriller", name: "Триллеры", slug: "thriller" },
+  { id: "sci-fi", name: "Фантастика", slug: "sci-fi" },
+  { id: "horror", name: "Ужасы", slug: "horror" },
+];
+
 const Index = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [filteredProducts, setFilteredProducts] = useState(mockProducts);
-
-  const handleAddToCart = (product: Product) => {
-    setCartItems((prev) => {
-      const existingItem = prev.find((item) => item.id === product.id);
-      if (existingItem) {
-        return prev.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
-        );
-      }
-      return [...prev, { ...product, quantity: 1 }];
-    });
-  };
-
-  const handleUpdateQuantity = (id: number, quantity: number) => {
-    if (quantity < 1) return;
-    setCartItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, quantity } : item)),
-    );
-  };
-
-  const handleRemoveItem = (id: number) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
-  };
+  const [filteredMovies, setFilteredMovies] = useState(mockMovies);
+  const [activeCategory, setActiveCategory] = useState("all");
 
   const handleSearch = (query: string) => {
     if (!query.trim()) {
-      setFilteredProducts(mockProducts);
+      setFilteredMovies(mockMovies);
       return;
     }
 
-    const filtered = mockProducts.filter(
-      (product) =>
-        product.name.toLowerCase().includes(query.toLowerCase()) ||
-        product.category.toLowerCase().includes(query.toLowerCase()),
+    const filtered = mockMovies.filter(
+      (movie) =>
+        movie.title.toLowerCase().includes(query.toLowerCase()) ||
+        movie.originalTitle?.toLowerCase().includes(query.toLowerCase()) ||
+        movie.genre.some((g) =>
+          g.toLowerCase().includes(query.toLowerCase()),
+        ) ||
+        movie.director.toLowerCase().includes(query.toLowerCase()),
     );
-    setFilteredProducts(filtered);
+    setFilteredMovies(filtered);
   };
 
-  const cartItemsCount = cartItems.reduce(
-    (sum, item) => sum + item.quantity,
-    0,
-  );
+  const handleCategoryChange = (categoryId: string) => {
+    setActiveCategory(categoryId);
+
+    if (categoryId === "all") {
+      setFilteredMovies(mockMovies);
+      return;
+    }
+
+    const categoryMap: Record<string, string> = {
+      action: "Боевик",
+      drama: "Драма",
+      comedy: "Комедия",
+      thriller: "Триллер",
+      "sci-fi": "Фантастика",
+      horror: "Ужасы",
+    };
+
+    const genreName = categoryMap[categoryId];
+    const filtered = mockMovies.filter((movie) =>
+      movie.genre.includes(genreName),
+    );
+    setFilteredMovies(filtered);
+  };
+
+  const handlePlay = (movie: Movie) => {
+    console.log("Playing movie:", movie.title);
+    // Здесь будет логика открытия плеера
+  };
+
+  const handleDetails = (movie: Movie) => {
+    console.log("Show details for:", movie.title);
+    // Здесь будет логика показа детальной информации
+  };
 
   return (
-    <div className="min-h-screen bg-white">
-      <Header
-        cartItemsCount={cartItemsCount}
-        onCartOpen={() => setIsCartOpen(true)}
-        onSearch={handleSearch}
+    <div className="min-h-screen bg-black">
+      <CinemaHeader onSearch={handleSearch} />
+
+      <CinemaHero />
+
+      <CategoryFilter
+        categories={categories}
+        activeCategory={activeCategory}
+        onCategoryChange={handleCategoryChange}
       />
 
-      <Hero />
-
-      <ProductGrid products={filteredProducts} onAddToCart={handleAddToCart} />
-
-      {isCartOpen && (
-        <Cart
-          items={cartItems}
-          onUpdateQuantity={handleUpdateQuantity}
-          onRemoveItem={handleRemoveItem}
-          onClose={() => setIsCartOpen(false)}
-        />
-      )}
+      <MovieGrid
+        movies={filteredMovies}
+        onPlay={handlePlay}
+        onDetails={handleDetails}
+        title="Популярные фильмы"
+        subtitle="Лучшие фильмы для просмотра онлайн"
+      />
     </div>
   );
 };
